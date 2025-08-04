@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/Notification-CenterTestDB
+    username: postgres
+    password: manage
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update  # only for dev, to create or update db schema
+    show-sql: true
+  application:
+    name: employee-service
+logging:
+  file:
+    name: logs/app.log # to store logs to a file, optional
+external:
+  hr:
+    api:
+      base-url: http://localhost:9090
