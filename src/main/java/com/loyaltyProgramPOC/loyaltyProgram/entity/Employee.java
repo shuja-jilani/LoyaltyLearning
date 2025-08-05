@@ -10,6 +10,17 @@ public class Employee {
 
     private String name;
 
+    public Employee(String name, String email, String department) {
+        this.name = name;
+        this.email = email;
+        this.department = department;
+    }
+
+
+    public Employee() {
+
+    }
+
     public Long getId() {
         return id;
     }

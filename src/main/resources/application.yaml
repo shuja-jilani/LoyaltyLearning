@@ -10,6 +10,10 @@ spring:
     show-sql: true
   application:
     name: employee-service
+  security:
+    user:
+      name: admin
+      password: admin
 logging:
   file:
     name: logs/app.log # to store logs to a file, optional
@@ -17,3 +21,6 @@ external:
   hr:
     api:
       base-url: http://localhost:9090
+
+
+
