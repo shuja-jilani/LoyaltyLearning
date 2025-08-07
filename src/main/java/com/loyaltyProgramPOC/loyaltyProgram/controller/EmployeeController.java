@@ -29,6 +29,11 @@ public class EmployeeController {
         return service.getEmployeeById(id);
     }
 
+    @GetMapping("/email/{email}")
+    public Employee getEmployee(@PathVariable String  email) {
+        return service.getEmployeeByEmail(email);
+    }
+
     @PutMapping("/{id}")
     public Employee updateEmployee(@PathVariable Long id, @RequestBody Employee employee) {
         return service.updateEmployee(id, employee);

@@ -14,6 +14,13 @@ spring:
     user:
       name: admin
       password: admin
+  cache:
+    type: redis
+    cache-names: loyalty
+  data:
+    redis:
+      host: localhost
+      port: 6379
 logging:
   file:
     name: logs/app.log # to store logs to a file, optional
@@ -21,6 +28,4 @@ external:
   hr:
     api:
       base-url: http://localhost:9090
-
-
 

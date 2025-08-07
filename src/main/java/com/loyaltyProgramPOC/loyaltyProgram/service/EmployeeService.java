@@ -4,6 +4,7 @@ import com.loyaltyProgramPOC.loyaltyProgram.entity.Employee;
 import com.loyaltyProgramPOC.loyaltyProgram.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.client.RestClient;
@@ -18,6 +19,8 @@ public class EmployeeService {
     @Autowired
     private RestTemplate restTemplate;
 
+    @Autowired
+    private RedisService redisService;
 
     @Value("${external.hr.api.base-url}") //to fetch the base url for calling external apis
     private String hrApiBaseUrl;
@@ -33,6 +36,21 @@ public class EmployeeService {
 
     public Employee getEmployeeById(Long id) {
         return repository.findById(id).orElseThrow(() -> new RuntimeException("Employee not found"));
+    }
+
+    public Employee getEmployeeByEmail(String email) {
+        // 1. Try to get from Redis
+        Employee cached = redisService.get(email, Employee.class);
+        if (cached != null) {
+            return cached;
+        }
+
+        // 2. If not in cache, get from DB and cache it
+        Employee employee = repository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+        redisService.set(email, employee,300L);
+        return employee;
     }
 
     public Employee updateEmployee(Long id, Employee updated) {
