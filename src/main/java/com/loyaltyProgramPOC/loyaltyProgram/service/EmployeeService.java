@@ -22,6 +22,9 @@ public class EmployeeService {
     @Autowired
     private RedisService redisService;
 
+    @Autowired
+    private JedisService jedisService;
+
     @Value("${external.hr.api.base-url}") //to fetch the base url for calling external apis
     private String hrApiBaseUrl;
 
@@ -38,20 +41,37 @@ public class EmployeeService {
         return repository.findById(id).orElseThrow(() -> new RuntimeException("Employee not found"));
     }
 
-    public Employee getEmployeeByEmail(String email) {
-        // 1. Try to get from Redis
-        Employee cached = redisService.get(email, Employee.class);
-        if (cached != null) {
-            return cached;
-        }
-
-        // 2. If not in cache, get from DB and cache it
-        Employee employee = repository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Employee not found"));
-
-        redisService.set(email, employee,300L);
-        return employee;
+//    public Employee getEmployeeByEmail(String email) {
+//        // 1. Try to get from Redis
+//        Employee cached = redisService.get(email, Employee.class);
+//        if (cached != null) {
+//            return cached;
+//        }
+//
+//        // 2. If not in cache, get from DB and cache it
+//        Employee employee = repository.findByEmail(email)
+//                .orElseThrow(() -> new RuntimeException("Employee not found"));
+//
+//        redisService.set(email, employee,300L);
+//        return employee;
+//    }
+public Employee getEmployeeByEmail(String email) {
+    // 1. Try to get from Redis
+    Employee cachedEmployee = jedisService.getValue(email, Employee.class);
+    if (cachedEmployee != null) {
+        return cachedEmployee;
     }
+
+    // 2. If not in cache, fetch from DB
+    Employee employee = repository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("Employee not found for email: " + email));
+
+    // 3. Cache the result in Redis
+    jedisService.setValueWithExpiry(email, employee, 300); // TTL: 300 seconds
+
+
+    return employee;
+}
 
     public Employee updateEmployee(Long id, Employee updated) {
         Employee existing = getEmployeeById(id);

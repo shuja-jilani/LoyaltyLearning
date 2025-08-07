@@ -1,10 +1,13 @@
 package com.loyaltyProgramPOC.loyaltyProgram.service;
 
+import jakarta.persistence.Access;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
 @Service
 public class ExternalEmployeeClient {
+
 
     private final RestClient restClient;
 
