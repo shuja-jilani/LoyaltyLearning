@@ -14,6 +14,7 @@ public class RedisService {
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
 
+    //we dont need all this because we'll be using cacheable etc
     public <T> T get(String key, Class<T> entityClass){
         try{
             return (T) redisTemplate.opsForValue().get(key);
